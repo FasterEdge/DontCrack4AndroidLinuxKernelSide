@@ -1,0 +1,68 @@
+# Android init.rc 示例 - DontCrack 进程管理器
+#
+# 本文件演示如何将 DontCrack 集成进 Android 的 init.rc 中，
+# 用于管理一个或多个后台子进程（守护进程风格），并对外暴露 HTTP 接口以便远程控制。
+#
+# 适用环境:
+#   - 已 root 或自定义的 Android 设备 (userdebug/user 版本)
+#   - 系统 init 已加载本片段（可通过 init.<hardware>.rc 或直接 patch 到 init.rc）
+#   - DontCrack_arm64-android 可执行文件位于 /system/bin/DontCrack
+#
+# 注意:
+#   - Android 的 init.rc 使用 Android Init Language (AIL) 语法，与 OpenHarmony 的 init.cfg (JSON) 不同
+#   - "service" 等同于 OpenHarmony 中的 "services"
+#   - "on <trigger>" 配合 "exec" / "start" 等同于 OpenHarmony 中的 "jobs"
+#   - Android 默认 shell 为 /system/bin/sh（部分定制系统在 /bin/sh），DontCrack 会自动识别
+
+import /init.${ro.hardware}.rc
+
+on early-init
+    # 给 DontCrack / 子进程 / 日志目录准备可写权限（部分 selinux 受限设备需要放宽）
+    chmod 0777 /system/bin/DontCrack
+    chmod 0777 /system/bin/edgecore
+    chmod 0777 /system/bin/SimpleWebShell
+    mkdir /data/logs 0755 root root
+    mkdir /data/logs/proc_manager 0755 root root
+    chmod 0777 /data/pres 0755
+    chmod 0777 /data/pres/edgecore-pre.sh
+
+# edgecore 子进程: 通过 DontCrack 启动、自动重启、提供 HTTP 管理接口 10000
+service dontcrack-edgecore /system/bin/DontCrack
+    class core
+    user root
+    group root
+    # 参数顺序无关，按需裁剪
+    -env PATH=/system/bin:/system/xbin:/vendor/bin
+    -path /system/bin/edgecore
+    -pre /data/pres/edgecore-pre.sh
+    -start-now
+    -auto-restart
+    -max-retries 3
+    -port 10000
+    -file-log
+    -log-path /data/logs/proc_manager/
+    -log-life-day 7
+    seclabel u:r:init:s0
+
+# SimpleWebShell 子进程: 通过 DontCrack 启动、自动重启、提供 HTTP 管理接口 10001
+service dontcrack-webshell /system/bin/DontCrack
+    class core
+    user root
+    group root
+    -env PATH=/system/bin:/system/xbin:/vendor/bin
+    -path /system/bin/SimpleWebShell
+    -args "-key harmony001 -shell /system/bin/sh -port 8888"
+    -start-now
+    -auto-restart
+    -max-retries 3
+    -port 10001
+    -file-log
+    -log-path /data/logs/proc_manager/
+    -log-life-day 7
+    seclabel u:r:init:s0
+
+# 在开机流程后期为 DontCrack 管理的子进程打上可执行权限（防止部分设备上 mv 后失权）
+on boot
+    exec - root root -- /system/bin/sh -c "chmod 0777 /system/bin/edgecore /system/bin/SimpleWebShell /data/pres/edgecore-pre.sh 2>/dev/null || true"
+    start dontcrack-edgecore
+    start dontcrack-webshell
