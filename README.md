@@ -146,7 +146,7 @@ curl http://<device-ip>:11883/heartbeat?password=xxx
 - 返回示例：
      ```
 	{
-	"version": "1.1.20260825",
+	"version": "1.0.20260826",
 	"state": "stopped",
 	"info": "进程管理器正常运行",
 	"timestamp": "2026-08-25 15:28:04",
