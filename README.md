@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://s2.loli.net/2025/10/30/whQl7sJryj1GbHU.png" style="width:100px;" width="100"/>
+<img src="./Logo.png" alt="logo" width="100"/>
 <h2>DontCrack4AndroidLinuxKernelSide</h2>
 <h3>安卓(Android)Linux Kernel侧专用进程管理器</h3>
 </div>
