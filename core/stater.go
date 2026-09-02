@@ -7,13 +7,13 @@ package core
 // tyza66
 // https://github.com/tyza66
 import (
-	"DontCrack/config"
-	pmexec "DontCrack/exec"
-	dclog "DontCrack/log"
 	"bufio"
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/FasterEdge/DontCrack4AndroidLinuxKernelSide/config"
+	pmexec "github.com/FasterEdge/DontCrack4AndroidLinuxKernelSide/exec"
+	dclog "github.com/FasterEdge/DontCrack4AndroidLinuxKernelSide/log"
 	"io"
 	"log"
 	"net"
