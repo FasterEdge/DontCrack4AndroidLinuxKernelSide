@@ -146,7 +146,7 @@ Refer to `example/example_init.rc`; add `service dontcrack-edgecore /system/bin/
 - Example response:
      ```
 	{
-	"version": "1.0.20260831",
+	"version": "1.0.20260901",
 	"state": "stopped",
 	"info": "Process manager running normally",
 	"timestamp": "2026-08-25 15:28:04",
