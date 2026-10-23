@@ -38,7 +38,7 @@ jobs:
         else
           tar czf ../dontcrack-android-linux-kernel-${{ matrix.target }}.tar.gz dontcrack-android-linux-kernel
         fi
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       with:
         name: 'dontcrack-android-linux-kernel-${{ matrix.target }}'
         path: '${{ github.workspace }}/dontcrack-android-linux-kernel-${{ matrix.target }}.*'
